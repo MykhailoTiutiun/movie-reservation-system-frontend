@@ -21,8 +21,8 @@ export class MovieDetailComponent implements OnInit {
   movie: Movie = new Movie();
   auditoriums: Auditorium[] = [];
   showtimesMap: Map<string, Showtime[]> = new Map<string, Showtime[]>();
-  selectedDate: string = 'today'; // Default to 'tomorrow'
-  weekDates: string[] = []; // Array to hold the next 7 days when "Week" is selected
+  selectedDate: string = 'today';
+  weekDates: string[] = [];
 
   constructor(
     private route: ActivatedRoute,

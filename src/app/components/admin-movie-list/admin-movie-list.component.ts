@@ -15,15 +15,14 @@ import {switchMap} from "rxjs";
   styleUrl: './admin-movie-list.component.css'
 })
 export class AdminMovieListComponent implements OnInit {
-  newMovie: Movie = new Movie();  // Holds the new movie data
-  movies: Movie[] = [];  // List of all movies
-  imagePreview: string | ArrayBuffer | null = null;  // Preview the selected image
-  selectedFile: File | null = null;  // Store the selected file
+  newMovie: Movie = new Movie();
+  movies: Movie[] = [];
+  imagePreview: string | ArrayBuffer | null = null;
+  selectedFile: File | null = null;
 
   constructor(private movieService: MovieService, private router: Router, private imageService: ImageService) {}
 
   ngOnInit(): void {
-    // Subscribe to the movie service to get the latest list of movies
     this.movieService.getMovies().subscribe(movies => this.movies = movies);
   }
 
@@ -31,16 +30,14 @@ export class AdminMovieListComponent implements OnInit {
     if (this.newMovie.title && this.newMovie.description && this.selectedFile) {
       this.imageService.create(this.selectedFile).pipe(
         switchMap(imageId => {
-          // If an image was uploaded, assign the imageId to the movie
           this.newMovie.imageId = imageId;
-          // Now, create the movie
           return this.movieService.create(this.newMovie);
         })
       ).subscribe(
         () => {
           this.movies.push(this.newMovie);
-          this.newMovie = new Movie();  // Reset the form
-          this.selectedFile = null;  // Reset the file input
+          this.newMovie = new Movie();
+          this.selectedFile = null;
         },
         error => console.error('Error occurred: ', error)
       );
@@ -70,7 +67,6 @@ export class AdminMovieListComponent implements OnInit {
     if (file) {
       this.selectedFile = file;
 
-      // Preview the image
       const reader = new FileReader();
       reader.onload = () => {
         this.imagePreview = reader.result;

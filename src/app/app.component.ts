@@ -18,7 +18,6 @@ export class AppComponent {
   }
 
   getReturnUrl(): string {
-    // Capture the current URL
     return this.router.url;
   }
 }

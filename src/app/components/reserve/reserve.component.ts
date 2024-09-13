@@ -42,7 +42,6 @@ export class ReserveComponent implements OnInit{
   ngOnInit(): void {
     const showtimeId = Number(this.route.snapshot.paramMap.get('showtimeId'));
     this.showtimeService.getById(showtimeId).pipe(
-      // Fetch the auditorium and movie once showtime is available
       switchMap(showtime => {
         this.showtime = showtime;
         return forkJoin([
@@ -50,7 +49,6 @@ export class ReserveComponent implements OnInit{
           this.auditoriumService.getById(showtime.auditoriumId)
         ]);
       }),
-      // After auditorium and seats are fetched
       switchMap(([seats, auditorium]) => {
         this.seats = seats;
         this.loadSelectedSeatsFromStorage();
@@ -62,23 +60,20 @@ export class ReserveComponent implements OnInit{
       }),
       catchError(error => {
         console.error('Error loading data', error);
-        // Handle error (e.g., show an error message or redirect)
         return [];
       })
     ).subscribe();
   }
 
   saveSelectedSeatsToStorage(): void {
-    const seatIds = Array.from(this.selectedSeats).map(seat => seat.id);  // Assuming Seat has an 'id' property
-    localStorage.setItem('selectedSeats', JSON.stringify(seatIds));  // Store the seat IDs in local storage
+    const seatIds = Array.from(this.selectedSeats).map(seat => seat.id);
+    localStorage.setItem('selectedSeats', JSON.stringify(seatIds));
   }
 
-  // Load selected seats from local storage
   loadSelectedSeatsFromStorage(): void {
     const savedSeats = localStorage.getItem('selectedSeats');
     if (savedSeats) {
       const seatIds: number[] = JSON.parse(savedSeats);
-      // Assuming your `seats` array is already populated, match the saved IDs with actual Seat objects
       this.selectedSeats = new Set(this.seats.filter(seat => seatIds.includes(seat.id)));
     }
   }
@@ -87,7 +82,6 @@ export class ReserveComponent implements OnInit{
     const rows: Seat[][] = [];
     let index = 0;
 
-    // Define row configurations
     let rowConfigurations;
 
     if(this.auditorium.name === 'IMAX'){

@@ -8,8 +8,8 @@ import {ImageService} from "../../services/image.service";
 
 @Component({
   selector: 'app-movie-list',
-  standalone: true,  // Enable standalone component
-  imports: [CommonModule, HttpClientModule, RouterModule],  // Import any Angular modules you need
+  standalone: true,
+  imports: [CommonModule, HttpClientModule, RouterModule],
   templateUrl: './movie-list.component.html',
   styleUrls: ['./movie-list.component.css'],
 })
