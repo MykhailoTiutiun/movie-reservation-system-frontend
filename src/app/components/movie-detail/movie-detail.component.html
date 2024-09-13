@@ -1,0 +1,95 @@
+<div *ngIf="movie" class="container mt-4">
+  <!-- Movie Poster and Details -->
+  <div class="row mb-4">
+    <div class="col-md-4">
+      <img *ngIf="movie.imageId" [src]="getImageUrl()" alt="{{ movie.title }}"
+           class="img-fluid rounded">
+    </div>
+
+    <div class="col-md-8">
+      <h2 class="display-4">{{ movie.title }}</h2>
+      <p class="lead">{{ movie.description }}</p>
+    </div>
+  </div>
+
+  <div class="row mb-3">
+    <div class="col-12">
+      <div class="form-check">
+        <input class="form-check-input" type="radio" id="todayRadio" name="dateFilter"
+               (change)="onDateChange('today', $event)" [checked]="selectedDate === 'today'">
+        <label class="form-check-label" for="todayRadio">Today</label>
+      </div>
+      <div class="form-check">
+        <input class="form-check-input" type="radio" id="tomorrowRadio" name="dateFilter"
+               (change)="onDateChange('tomorrow', $event)" [checked]="selectedDate === 'tomorrow'">
+        <label class="form-check-label" for="tomorrowRadio">Tomorrow</label>
+      </div>
+      <div class="form-check">
+        <input class="form-check-input" type="radio" id="weekRadio" name="dateFilter"
+               (change)="onDateChange('week', $event)" [checked]="selectedDate === 'week'">
+        <label class="form-check-label" for="weekRadio">Week</label>
+      </div>
+    </div>
+  </div>
+
+  <!-- Auditorium and Showtimes Table for Single Day -->
+  <div *ngIf="selectedDate !== 'week'" class="row">
+    <div class="col-12">
+      <h3 class="mb-3">Showtimes for {{ getFormattedDate(selectedDate) }}</h3>
+      <table class="table table-striped table-bordered">
+        <thead>
+        <tr>
+          <th style="width: 20%">Auditorium</th>
+          <th>Showtimes</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr *ngFor="let auditorium of auditoriums">
+          <td style="width: 20%">{{ auditorium.name }}</td>
+          <td>
+            <button *ngFor="let showtime of showtimesMap.get(auditorium.id.toString())"
+                    class="btn btn-primary btn-sm me-2"
+                    (click)="goToReservation(showtime.id)">
+              {{ showtime.startTime }}
+            </button>
+          </td>
+        </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- Auditorium and Showtimes Tables for Week -->
+  <div *ngIf="selectedDate === 'week'" class="row">
+    <div class="col-12" *ngFor="let date of weekDates">
+      <div *ngIf="hasShowtimesForDate(date)">
+        <h3 class="mb-3">Showtimes for {{ date }}</h3>
+        <table class="table table-striped table-bordered">
+          <thead>
+          <tr>
+            <th style="width: 20%">Auditorium</th>
+            <th>Showtimes</th>
+          </tr>
+          </thead>
+          <tbody>
+          <tr *ngFor="let auditorium of auditoriums">
+            <td style="width: 20%">{{ auditorium.name }}</td>
+            <td>
+              <button *ngFor="let showtime of showtimesMap.get(auditorium.id + '-' + date)"
+                      class="btn btn-primary btn-sm me-2"
+                      (click)="goToReservation(showtime.id)">
+                {{ showtime.startTime }}
+              </button>
+            </td>
+          </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Loading State -->
+<div *ngIf="!movie" class="container mt-4">
+  <p class="text-muted">Loading...</p>
+</div>

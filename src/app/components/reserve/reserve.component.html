@@ -1,0 +1,48 @@
+<div *ngIf="showtime && auditorium && movie" class="container mt-4">
+  <h1 class="display-4">Reserve for {{ movie.title }}</h1>
+  <h2 class="display-5">Showtime: {{ showtime.startTime }} - {{ showtime.endTime }}</h2>
+  <h3 class="display-6">Auditorium: {{ auditorium.name }}</h3>
+
+  <div class="row">
+    <!-- Selected Seats List -->
+    <div class="col-md-3">
+      <h4 class="mb-3">Selected Seats</h4>
+      <ul class="list-group mb-3">
+        <li *ngFor="let seat of selectedSeats" class="list-group-item d-flex justify-content-between align-items-center">
+          {{ seat.name }}
+          <button class="btn btn-danger btn-sm ms-2" (click)="toggleSeatSelection(seat)">
+            <i class="bi bi-x"></i>
+          </button>
+        </li>
+      </ul>
+
+      <button class="btn btn-success mb-3" *ngIf="selectedSeats.size > 0" (click)="reserveSeat()">Confirm</button>
+    </div>
+
+    <div class="col-md-9">
+      <h4 class="mb-3">Select Your Seats</h4>
+
+      <!-- Iterate over rows A-F -->
+      <div *ngFor="let row of getRows()">
+        <div class="d-flex justify-content-center mb-2">
+          <!-- Iterate over seats in each row -->
+          <ng-container *ngFor="let seat of row">
+            <button class="btn btn-primary seat-btn"
+                    [ngClass]="{
+                  'btn-secondary': isSeatBooked(seat),
+                  'btn-success': isSeatSelected(seat)
+                  }"
+                    (click)="toggleSeatSelection(seat)"
+                    [disabled]="isSeatBooked(seat)">
+            </button>
+          </ng-container>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Other content for non-IMAX auditoriums or other parts of the component -->
+  <div *ngIf="auditorium.name !== 'imax'">
+    <!-- Content for other auditoriums -->
+  </div>
+</div>
