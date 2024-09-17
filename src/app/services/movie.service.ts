@@ -1,7 +1,7 @@
-import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
-import { Observable } from 'rxjs';
-import { Movie } from '../models/movie';
+import {Injectable} from '@angular/core';
+import {HttpClient} from '@angular/common/http';
+import {Observable} from 'rxjs';
+import {Movie} from '../models/movie';
 
 @Injectable({
   providedIn: 'root',
@@ -24,6 +24,14 @@ export class MovieService {
     const description = movie.description;
     const imageId = movie.imageId;
     return this.http.post(this.apiUrl, {title, description, imageId});
+  }
+
+  addGenre(movieId: number, genreId: number): Observable<any> {
+    return this.http.put(this.apiUrl + '/addGenre', {movieId, genreId});
+  }
+
+  removeGenre(movieId: number, genreId: number): Observable<any> {
+    return this.http.put(this.apiUrl + '/removeGenre', {movieId, genreId});
   }
 
   delete(id: number): Observable<any> {

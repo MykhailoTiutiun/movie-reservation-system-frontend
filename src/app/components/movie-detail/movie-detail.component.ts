@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import {Component, OnInit} from '@angular/core';
 import {ActivatedRoute, Router} from '@angular/router';
 import {MovieService} from "../../services/movie.service";
 import {Movie} from "../../models/movie";
@@ -7,7 +7,6 @@ import {Auditorium} from "../../models/auditorium";
 import {AuditoriumService} from "../../services/auditorium.service";
 import {ShowtimeService} from "../../services/showtime.service";
 import {Showtime} from "../../models/showtime";
-import {forkJoin, map, switchMap} from "rxjs";
 import {ImageService} from "../../services/image.service";
 
 @Component({
@@ -31,15 +30,17 @@ export class MovieDetailComponent implements OnInit {
     private imageService: ImageService,
     private auditoriumService: AuditoriumService,
     private showtimeService: ShowtimeService
-  ) {}
+  ) {
+  }
 
   ngOnInit(): void {
     const id = Number(this.route.snapshot.paramMap.get('id'));
-    this.movieService.getById(id).subscribe(movie => this.movie = movie);
-
-    this.auditoriumService.getByMovieId(id).subscribe(auditoriums => {
-      this.auditoriums = auditoriums;
-      this.loadShowtimes();
+    this.movieService.getById(id).subscribe(movie => {
+      this.movie = movie
+      this.auditoriumService.getList().subscribe(auditoriums => {
+        this.auditoriums = auditoriums;
+        this.loadShowtimes();
+      });
     });
   }
 
@@ -53,37 +54,18 @@ export class MovieDetailComponent implements OnInit {
   }
 
   loadShowtimesForDate(dateString: string): void {
-    const showtimeObservables = this.auditoriums
-      .map(auditorium =>
-        this.showtimeService.getByAuditoriumIdAndDate(auditorium.id, dateString).pipe(
-          map(showtimes => ({ auditoriumId: auditorium.id, showtimes }))
-        )
-      );
-
-    forkJoin(showtimeObservables).subscribe(showtimesForAuditoriums => {
-      showtimesForAuditoriums.forEach(item => {
-        this.showtimesMap.set(item.auditoriumId.toString(), item.showtimes);
-      });
+    this.showtimeService.getByMovieIdAndDate(this.movie.id, dateString).subscribe(showtimes => {
+      this.auditoriums.forEach(auditorium => this.showtimesMap.set(auditorium.id.toString(), showtimes.filter(showtime => showtime.auditoriumId === auditorium.id)));
     });
   }
 
   loadShowtimesForWeek(): void {
     this.weekDates = this.getWeekDates();
-    const showtimeObservables = this.weekDates.flatMap(dateString =>
-      this.auditoriums.map(auditorium =>
-        this.showtimeService.getByAuditoriumIdAndDate(auditorium.id, dateString).pipe(
-          map(showtimes => ({ auditoriumId: auditorium.id, dateString, showtimes }))
-        )
-      )
-    );
-
-    forkJoin(showtimeObservables).subscribe(showtimesForAuditoriums => {
-      this.showtimesMap.clear();
-      showtimesForAuditoriums.forEach(item => {
-        const key = `${item.auditoriumId}-${item.dateString}`;
-        this.showtimesMap.set(key, item.showtimes);
-      });
-    });
+    this.weekDates.forEach(weekDate => {
+      this.showtimeService.getByMovieIdAndDate(this.movie.id, weekDate).subscribe(showtimes => {
+        this.auditoriums.forEach(auditorium => this.showtimesMap.set(`${auditorium.id}-${weekDate}`, showtimes.filter(showtime => showtime.auditoriumId === auditorium.id)));
+      })
+    })
   }
 
   onDateChange(selectedDate: string, event: any): void {

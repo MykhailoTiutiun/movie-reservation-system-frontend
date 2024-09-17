@@ -1,4 +1,4 @@
-import { Auditorium } from './auditorium';
+import {Auditorium} from './auditorium';
 
 describe('Auditorium', () => {
   it('should create an instance', () => {

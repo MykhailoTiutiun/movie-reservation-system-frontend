@@ -1,0 +1,36 @@
+<div class="container">
+  <div class="row justify-content-center">
+    <div class="col-md-6 col-lg-5">
+      <div class="card mt-5 shadow-sm">
+        <div class="card-body">
+          <h4 class="card-title text-center mb-4">Register</h4>
+
+          <form (submit)="register()">
+
+            <div class="mb-3">
+              <label for="email" class="form-label">Email Address</label>
+              <input id="email" [(ngModel)]="email" name="email" class="form-control" type="email" required placeholder="Enter your email">
+            </div>
+
+            <div class="mb-3">
+              <label for="password" class="form-label">Password</label>
+              <input id="password" [(ngModel)]="password" name="password" type="password" class="form-control" required placeholder="Enter your password">
+            </div>
+
+            <div class="mb-3">
+              <label for="confirmPassword" class="form-label">Confirm Password</label>
+              <input id="confirmPassword" [(ngModel)]="confirmPassword" name="confirmPassword" type="password" class="form-control" required placeholder="Confirm your password">
+            </div>
+
+            <button type="submit" class="btn btn-primary w-100">Register</button>
+          </form>
+
+          <div class="text-center mt-3">
+            <a routerLink="/sign-in" class="text-decoration-none">Already have an account? Login</a>
+          </div>
+
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

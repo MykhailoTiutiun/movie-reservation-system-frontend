@@ -13,7 +13,7 @@
           id="title"
           [(ngModel)]="newMovie.title"
           name="title"
-          required />
+          required/>
         <div class="invalid-feedback">
           Please provide a movie title.
         </div>
@@ -27,7 +27,7 @@
           id="description"
           [(ngModel)]="newMovie.description"
           name="description"
-          required />
+          required/>
         <div class="invalid-feedback">
           Please provide a description.
         </div>
@@ -39,15 +39,46 @@
           type="file"
           class="form-control"
           id="image"
-          (change)="onFileSelected($event)" />
+          (change)="onFileSelected($event)"/>
         <!-- Image Preview -->
         <div *ngIf="imagePreview" class="mt-3">
           <img [src]="imagePreview" alt="Image Preview" style="width: 100px; height: auto;">
         </div>
       </div>
 
-      <button type="submit" class="btn btn-primary">Add Movie</button>
+      <button type="submit" class="btn btn-primary">Create</button>
     </form>
+  </div>
+
+  <div class="card p-4 mb-4">
+    <h3 class="card-title">Add genre</h3>
+    <form (submit)="createGenre()" class="needs-validation" novalidate>
+      <div class="mb-3">
+      <label for="genre-name" class="form-label">Name:</label>
+      <input
+        type="text"
+        class="form-control"
+        id="genre-name"
+        [(ngModel)]="newGenre.name"
+        name="name"
+        required/>
+      </div>
+      <div class="invalid-feedback">
+        Please provide a name.
+      </div>
+      <button type="submit" class="btn btn-primary">Create</button>
+    </form>
+  </div>
+
+  <!-- Genre List -->
+  <h2 class="my=4">Genre List</h2>
+  <div>
+    <div *ngIf="genres">
+      <div class="badge bg-secondary me-1" *ngFor="let genre of genres">
+        <span>{{ genre.name }}</span>
+        <i class="bi-trash ms-2" style="cursor: pointer;" (click)="deleteGenre(genre.id)"></i>
+      </div>
+    </div>
   </div>
 
   <!-- Movie List -->
@@ -58,18 +89,39 @@
     <!-- Use Angular *ngFor to loop through the movies array -->
     <div class="col-md-4 mb-4" *ngFor="let movie of movies">
       <!-- Bootstrap card for each movie item -->
-      <div class="card h-100">
+      <div class="card">
         <a [routerLink]="['/movie', movie.id]">
           <img
             *ngIf="movie.imageId"
             [src]="getImageUrl(movie.imageId)"
             class="card-img-top"
             alt="{{ movie.title }}"
-            style="object-fit: cover;" />
+            style="object-fit: cover;"/>
         </a>
         <div class="card-body">
           <a [routerLink]="['/movie', movie.id]" class="card-title h5">{{ movie.title }}</a>
           <p class="card-text">{{ movie.description }}</p>
+          <div>
+            <div *ngFor="let genre of movie.genres | keyvalue" class="badge bg-secondary me-1">
+              <span>{{ genre.value }}</span>
+              <i class="bi-x ms-2" style="cursor: pointer;" (click)="removeGenreFromMovie(genre.key, movie)"></i>
+            </div>
+            <span *ngIf="selectedAddGenreMovie.id !== movie.id"
+                  class="badge bg-primary me-1"
+                  style="cursor: pointer;"
+                  (click)="openAddGenreForm(movie)"
+            >
+              Add Genre
+            </span>
+            <form class="mt-2" *ngIf="selectedAddGenreMovie.id === movie.id" (submit)="addGenreToMovie(selectedAddGenreGenre, movie)">
+              <h5>Add Genre</h5>
+              <select class="form-select" [(ngModel)]="selectedAddGenreGenre" name="genre">
+                <option *ngFor="let genre of genres" [ngValue]="genre">{{ genre.name }}</option>
+              </select>
+              <button type="submit" class="btn btn-primary mt-2">Add</button>
+              <button type="button" class="btn btn-secondary mt-2 ms-2" (click)="closeAddGenreForm()">Cancel</button>
+            </form>
+          </div>
         </div>
         <div class="card-footer">
           <button (click)="removeMovie(movie)" class="btn btn-danger">Remove</button>
@@ -77,7 +129,4 @@
       </div>
     </div>
   </div>
-
-  <!-- Display a message if no movies are available -->
-  <p *ngIf="movies.length === 0" class="text-muted">No movies available.</p>
 </div>

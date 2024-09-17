@@ -1,4 +1,4 @@
-import { Showtime } from './showtime';
+import {Showtime} from './showtime';
 
 describe('Showtime', () => {
   it('should create an instance', () => {
