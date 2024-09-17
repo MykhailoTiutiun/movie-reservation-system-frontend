@@ -3,5 +3,5 @@ export class Movie {
   title!: string;
   description!: string;
   imageId!: number;
-  imageUrl?: string;
+  genres!: Map<number, string>;
 }

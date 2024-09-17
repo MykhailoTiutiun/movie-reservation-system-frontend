@@ -1,6 +1,6 @@
-import { ComponentFixture, TestBed } from '@angular/core/testing';
+import {ComponentFixture, TestBed} from '@angular/core/testing';
 
-import { AdminMovieListComponent } from './admin-movie-list.component';
+import {AdminMovieListComponent} from './admin-movie-list.component';
 
 describe('AdminMovieListComponent', () => {
   let component: AdminMovieListComponent;
@@ -11,7 +11,7 @@ describe('AdminMovieListComponent', () => {
       imports: [AdminMovieListComponent]
     })
     .compileComponents();
-    
+
     fixture = TestBed.createComponent(AdminMovieListComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();

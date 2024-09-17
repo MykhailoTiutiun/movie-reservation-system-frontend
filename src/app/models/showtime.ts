@@ -4,4 +4,5 @@ export class Showtime {
   startTime!: string;
   endTime!: string;
   auditoriumId!: number;
+  movieId!: number;
 }

@@ -9,9 +9,7 @@ import {ShowtimeService} from "../../services/showtime.service";
 import {MovieService} from "../../services/movie.service";
 import {Showtime} from "../../models/showtime";
 import {Movie} from "../../models/movie";
-import {catchError, forkJoin, map, switchMap} from "rxjs";
 import {AuthService} from "../../services/auth.service";
-import {routes} from "../../app.routes";
 
 @Component({
   selector: 'app-reserve',
@@ -41,28 +39,12 @@ export class ReserveComponent implements OnInit{
 
   ngOnInit(): void {
     const showtimeId = Number(this.route.snapshot.paramMap.get('showtimeId'));
-    this.showtimeService.getById(showtimeId).pipe(
-      switchMap(showtime => {
-        this.showtime = showtime;
-        return forkJoin([
-          this.seatService.getAllByShowtimeId(showtimeId),
-          this.auditoriumService.getById(showtime.auditoriumId)
-        ]);
-      }),
-      switchMap(([seats, auditorium]) => {
-        this.seats = seats;
-        this.loadSelectedSeatsFromStorage();
-        this.auditorium = auditorium;
-        return this.movieService.getById(auditorium.movieId);
-      }),
-      map(movie => {
-        this.movie = movie;
-      }),
-      catchError(error => {
-        console.error('Error loading data', error);
-        return [];
-      })
-    ).subscribe();
+    this.showtimeService.getById(showtimeId).subscribe(showtime => {
+      this.showtime = showtime;
+      this.movieService.getById(showtime.movieId).subscribe(movie => this.movie = movie);
+      this.auditoriumService.getById(showtime.auditoriumId).subscribe(auditorium => this.auditorium = auditorium);
+      this.seatService.getAllByShowtimeId(showtimeId).subscribe(seats => this.seats = seats);
+    })
   }
 
   saveSelectedSeatsToStorage(): void {
@@ -125,7 +107,16 @@ export class ReserveComponent implements OnInit{
     this.selectedSeats.forEach(seat => seatIds.push(seat.id))
 
     this.seatService.reserveSeat(seatIds, userId).subscribe(
-      () => this.router.navigate([this.router.url]),
+      () => {
+        this.selectedSeats.clear();
+        this.saveSelectedSeatsToStorage();
+
+        this.seats.forEach(seat => {
+          if(seatIds.includes(seat.id)){
+            seat.availability = false;
+          }
+        })
+      },
       error => console.error('Login error: ', error)
     )
   }

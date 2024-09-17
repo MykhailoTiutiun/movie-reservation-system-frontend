@@ -1,6 +1,5 @@
-import { Injectable } from '@angular/core';
+import {Injectable} from '@angular/core';
 import {HttpClient, HttpHeaders} from "@angular/common/http";
-import {Router} from "@angular/router";
 import {Observable, tap} from "rxjs";
 import {jwtDecode} from "jwt-decode";
 
@@ -11,11 +10,11 @@ export class AuthService {
   private apiUrl = 'http://localhost:8080/v1/users';
   private tokenKey = 'jwt_token';
 
-  constructor(private http: HttpClient, private router: Router) {
+  constructor(private http: HttpClient) {
   }
 
   register(email: string, password: string): Observable<any> {
-    return this.http.post(`${this.apiUrl}`, {email, password});
+    return this.http.post(`${this.apiUrl}/register`, {email, password});
   }
 
   login(email: string, password: string): Observable<any> {
@@ -37,22 +36,41 @@ export class AuthService {
   }
 
   getToken(): string | null {
-    return localStorage.getItem(this.tokenKey);
+    let token = localStorage.getItem(this.tokenKey);
+    if (token) {
+      const expTime = this.getExpirationTime(token);
+      if (expTime && expTime > Date.now()) {
+        return token;
+      } else {
+        this.logout();
+      }
+    }
+    return null;
+  }
+
+  private getExpirationTime(token: string): number | null {
+    try {
+      const decodedToken: any = jwtDecode(token);
+      return decodedToken.exp * 1000 || null;
+    } catch (error) {
+      console.error('Error decoding token', error);
+      return null;
+    }
   }
 
   getUserId(): number | null {
     const token = this.getToken()
 
     if (!token) {
-      return null;  // If there's no token, return null
+      return null;
     }
 
     try {
-      const decodedToken: any = jwtDecode(token); // Decode the token
-      return decodedToken.sub || null;  // Assuming the userId field is in the token
+      const decodedToken: any = jwtDecode(token);
+      return decodedToken.sub || null;
     } catch (error) {
       console.error('Error decoding token', error);
-      return null;  // If decoding fails, return null
+      return null;
     }
   }
 
@@ -60,15 +78,15 @@ export class AuthService {
     const token = this.getToken()
 
     if (!token) {
-      return false;  // If there's no token, return null
+      return false;
     }
 
     try {
-      const decodedToken: any = jwtDecode(token); // Decode the token
-      return decodedToken.role === 'ADMIN' || false;  // Assuming the userId field is in the token
+      const decodedToken: any = jwtDecode(token);
+      return decodedToken.role === 'ADMIN' || false;
     } catch (error) {
       console.error('Error decoding token', error);
-      return false;  // If decoding fails, return null
+      return false;
     }
   }
 

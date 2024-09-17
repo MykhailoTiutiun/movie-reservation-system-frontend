@@ -1,18 +1,18 @@
 import {ComponentFixture, TestBed} from '@angular/core/testing';
 
-import {MovieDetailComponent} from './movie-detail.component';
+import {CheckEmailComponent} from './check-email.component';
 
-describe('MovieDetailComponent', () => {
-  let component: MovieDetailComponent;
-  let fixture: ComponentFixture<MovieDetailComponent>;
+describe('CheckEmailComponent', () => {
+  let component: CheckEmailComponent;
+  let fixture: ComponentFixture<CheckEmailComponent>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [MovieDetailComponent]
+      imports: [CheckEmailComponent]
     })
     .compileComponents();
 
-    fixture = TestBed.createComponent(MovieDetailComponent);
+    fixture = TestBed.createComponent(CheckEmailComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

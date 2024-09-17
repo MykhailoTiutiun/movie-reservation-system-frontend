@@ -1,11 +1,28 @@
-<form (submit)="login()">
-  <div>
-    <label for="email">Username</label>
-    <input id="email" [(ngModel)]="email" name="email" required />
+<div class="container">
+  <div class="row justify-content-center">
+    <div class="col-md-6 col-lg-4">
+      <div class="card mt-5 shadow-sm">
+        <div class="card-body">
+          <h4 class="card-title text-center mb-4">Sign in</h4>
+          <form (submit)="login()">
+            <div class="mb-3">
+              <label for="email" class="form-label">Username</label>
+              <input id="email" [(ngModel)]="email" name="email" class="form-control" type="email" required placeholder="Enter your username">
+            </div>
+
+            <div class="mb-3">
+              <label for="password" class="form-label">Password</label>
+              <input id="password" [(ngModel)]="password" name="password" type="password" class="form-control" required placeholder="Enter your password">
+            </div>
+
+            <button type="submit" class="btn btn-primary w-100">Login</button>
+          </form>
+          <div class="text-center mt-3">
+            <a routerLink="/sign-up" class="text-decoration-none">Don't have an account?</a>
+          </div>
+
+        </div>
+      </div>
+    </div>
   </div>
-  <div>
-    <label for="password">Password</label>
-    <input id="password" [(ngModel)]="password" name="password" type="password" required />
-  </div>
-  <button type="submit">Login</button>
-</form>
+</div>

@@ -1,0 +1,80 @@
+<div class="container mt-4">
+  <div *ngIf="auditorium">
+    <h2 class="display-4">{{auditorium.name}}</h2>
+    <p class="lead">{{auditorium.description}}</p>
+  </div>
+
+  <div>
+    <div class="row text-center">
+      <div class="col-md-4">
+        <div class="btn-group">
+          <div
+            class="btn btn-primary"
+            mwlCalendarPreviousView
+            [view]="view"
+            [(viewDate)]="viewDate"
+          >
+            Previous
+          </div>
+          <div
+            class="btn btn-outline-secondary"
+            mwlCalendarToday
+            [(viewDate)]="viewDate"
+          >
+            Today
+          </div>
+          <div
+            class="btn btn-primary"
+            mwlCalendarNextView
+            [view]="view"
+            [(viewDate)]="viewDate"
+          >
+            Next
+          </div>
+        </div>
+      </div>
+      <div class="col-md-4">
+        <h3>{{ viewDate | calendarDate:(view + 'ViewTitle'):'en':1 }}</h3>
+      </div>
+    </div>
+    <br>
+
+    <div class="row">
+      <div class="col-md-3">
+        <div
+          class="card"
+        >
+          <div class="card-body">
+            <p *ngIf="externalEvents.length === 0"><em>No events added</em></p>
+            <ul>
+              <li
+                *ngFor="let event of externalEvents"
+                mwlDraggable
+                [dropData]="{event: event}"
+                [touchStartLongPress]="{ delay: 300, delta: 30 }"
+                dragActiveClass="drag-active"
+              >
+                <a href="javascript:;">
+                  {{ event.title }}
+                </a>
+              </li>
+            </ul>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-9 calendar-container border">
+        <mwl-calendar-week-view
+          [viewDate]="viewDate"
+          [events]="events"
+          [refresh]="refresh"
+          [weekStartsOn]="1"
+          [dayStartHour]="10"
+          [dayEndHour]="22"
+          [hourSegments]="4"
+          (eventTimesChanged)="eventDropped($event)"
+        >
+        </mwl-calendar-week-view>
+      </div>
+    </div>
+  </div>
+</div>

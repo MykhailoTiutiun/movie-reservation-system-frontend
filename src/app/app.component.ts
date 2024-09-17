@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import {Component} from '@angular/core';
 import {Router, RouterModule, RouterOutlet} from '@angular/router';
 import {MovieListComponent} from "./components/movie-list/movie-list.component";
 import {AuthService} from "./services/auth.service";

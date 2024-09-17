@@ -4,6 +4,9 @@
       <!-- Movies link -->
       <a class="navbar-brand" routerLink="/">Movies</a>
       <a class="navbar-brand" routerLink="/admin" *ngIf="authService.isAdmin()" >Admin</a>
+      <a class="navbar-brand" routerLink="/admin/auditorium/1" *ngIf="authService.isAdmin()" >IMAX</a>
+      <a class="navbar-brand" routerLink="/admin/auditorium/2" *ngIf="authService.isAdmin()" >4DX</a>
+      <a class="navbar-brand" routerLink="/admin/auditorium/3" *ngIf="authService.isAdmin()" >3D</a>
 
       <!-- Toggle button for mobile -->
       <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav"

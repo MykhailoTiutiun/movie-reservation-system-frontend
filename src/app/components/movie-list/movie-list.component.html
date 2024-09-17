@@ -1,11 +1,8 @@
 <div class="container">
   <h2 class="my-4">Movie List</h2>
 
-  <!-- Bootstrap row to create a grid layout -->
   <div class="row">
-    <!-- Use Angular *ngFor to loop through the movies array -->
     <div class="col-md-4 mb-4" *ngFor="let movie of movies">
-      <!-- Bootstrap card for each movie item -->
       <div class="card">
         <a [routerLink]="['/movie', movie.id]">
           <img *ngIf="movie.imageId" [src]="getImageUrl(movie.imageId)" class="card-img-top" alt="{{ movie.title }}">
@@ -13,11 +10,15 @@
         <div class="card-body">
           <a [routerLink]="['/movie', movie.id]" class="card-title">{{ movie.title }}</a>
           <p class="card-text">{{ movie.description }}</p>
+          <div *ngIf="movie.genres">
+            <span *ngFor="let genre of movie.genres | keyvalue" class="badge bg-secondary me-1">
+              {{ genre.value }}
+            </span>
+          </div>
         </div>
       </div>
     </div>
   </div>
 
-  <!-- Display a message if no movies are available -->
   <p *ngIf="movies.length === 0">No movies available.</p>
 </div>

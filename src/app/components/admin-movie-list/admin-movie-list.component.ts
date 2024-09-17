@@ -6,6 +6,8 @@ import {FormsModule} from "@angular/forms";
 import {Router, RouterModule} from "@angular/router";
 import {ImageService} from "../../services/image.service";
 import {switchMap} from "rxjs";
+import {Genre} from "../../models/genre";
+import {GenreService} from "../../services/genre.service";
 
 @Component({
   selector: 'app-admin-movie-list',
@@ -16,14 +18,30 @@ import {switchMap} from "rxjs";
 })
 export class AdminMovieListComponent implements OnInit {
   newMovie: Movie = new Movie();
+  newGenre: Genre = new Genre();
   movies: Movie[] = [];
+  genres: Genre[] = [];
   imagePreview: string | ArrayBuffer | null = null;
   selectedFile: File | null = null;
+  selectedAddGenreMovie: Movie = new Movie();
+  selectedAddGenreGenre: Genre = new Genre();
 
-  constructor(private movieService: MovieService, private router: Router, private imageService: ImageService) {}
+  constructor(
+    private movieService: MovieService,
+    private router: Router,
+    private imageService: ImageService,
+    private genreService: GenreService,
+  ) {
+  }
 
   ngOnInit(): void {
-    this.movieService.getMovies().subscribe(movies => this.movies = movies);
+    this.movieService.getMovies().subscribe(movies => {
+      movies.forEach(movie => {
+        movie.genres = new Map(Object.entries(movie.genres).map(([key, value]) => [Number(key), value]));
+      })
+      return this.movies = movies;
+    });
+    this.genreService.getList().subscribe(genres => this.genres = genres);
   }
 
   addMovie(): void {
@@ -45,21 +63,33 @@ export class AdminMovieListComponent implements OnInit {
       alert('Please fill out the movie title and description!');
     }
   }
+
   getImageUrl(imageId: number): string {
     return this.imageService.getImageUrl(imageId)
   }
 
+  openAddGenreForm(movie: Movie): void {
+    this.selectedAddGenreMovie = movie;
+  }
+
+  closeAddGenreForm(): void {
+    this.selectedAddGenreMovie = new Movie();
+  }
+
   removeMovie(movie: Movie): void {
-    if(movie.imageId){
-      this.imageService.deleteImage(movie.imageId).subscribe(
-        error => console.error('Login error: ', error)
-      )
+    if (confirm('Are you sure you want to delete this movie?')) {
+
+      if (movie.imageId) {
+        this.imageService.deleteImage(movie.imageId).subscribe(
+          error => console.error('Image deletion error: ', error)
+        )
+      }
+      this.movieService.delete(movie.id).subscribe(
+        () => this.movies = this.movies.filter(m => m.id != movie.id),
+        error => console.error('Movie deletion error: ', error)
+      );
+      this.movies = this.movies.filter(m => m.id !== movie.id);
     }
-    this.movieService.delete(movie.id).subscribe(
-      () => this.router.navigate([this.router.url]),
-      error => console.error('Login error: ', error)
-    );
-    this.movies = this.movies.filter(m => m.id !== movie.id);
   }
 
   onFileSelected(event: any): void {
@@ -73,5 +103,48 @@ export class AdminMovieListComponent implements OnInit {
       };
       reader.readAsDataURL(file);
     }
+  }
+
+  createGenre(): void {
+    if(this.newGenre.name){
+      this.genreService.create(this.newGenre).subscribe(
+        genre => {
+          this.genres.push(genre)
+          this.newGenre = new Genre();
+        },
+        error => console.error('Genre creation error: ', error)
+      )
+    } else {
+      alert('Please fill out the genre name!');
+    }
+  }
+
+  deleteGenre(id: number): void {
+    if(confirm('Are you sure you want to delete this genre?')){
+      this.genreService.deleteById(id).subscribe(
+        () => this.genres = this.genres.filter(genre => genre.id != id),
+        error => console.error('Genre deletion error: ', error)
+      );
+    }
+  }
+
+  addGenreToMovie(genre: Genre, movie: Movie): void {
+    this.movieService.addGenre(movie.id, genre.id).subscribe(
+      () => {
+        movie.genres.set(genre.id, genre.name);
+        this.selectedAddGenreGenre = new Genre();
+        this.selectedAddGenreMovie = new Movie();
+      },
+      error => console.error('Genre adding to movie error: ', error)
+    )
+  }
+
+  removeGenreFromMovie(genreId: number, movie: Movie): void {
+    this.movieService.removeGenre(movie.id, genreId).subscribe(
+      () => {
+        movie.genres.delete(Number(genreId));
+      },
+      error => console.error('Genre removing from movie error: ', error)
+    );
   }
 }
